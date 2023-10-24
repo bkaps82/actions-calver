@@ -39,6 +39,10 @@ inputs:
     description: 'Extended regexp for grep to match existing versions'
     required: false
     default: '^20[^\-]*$'
+  generate_release_notes:
+    description: 'Automatically generate release notes'
+    required: false
+    default: 'false'
 
 outputs:
   release:
@@ -56,3 +60,4 @@ runs:
     - ${{ inputs.release }}
     - ${{ inputs.date_format }}
     - ${{ inputs.version_regexp }}
+    - ${{ inputs.generate_release_notes }}    

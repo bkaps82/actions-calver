@@ -18,6 +18,7 @@ PRE="${5}"
 CREATE_RELEASE="${6}"
 DATE_FORMAT="${7}"
 VERSION_REGEXP="${8}"
+GENERATE_RELEASE_NOTES="${9}"
 
 # Security
 git config --global --add safe.directory /github/workspace
@@ -59,7 +60,10 @@ echo "${MESSAGE}"
 
 echo "Create release : ${CREATE_RELEASE}"
 
+echo "Generate release notes : ${GENERATE_RELEASE_NOTES}"
+
 if [ "${CREATE_RELEASE}" = "true" ] || [ "${CREATE_RELEASE}" = true ]; then
+  echo "Create Release : ${NEXT_RELEASE}"
   JSON_STRING=$(jq -n \
     --arg tn "$NEXT_RELEASE" \
     --arg tc "$BRANCH" \
@@ -67,7 +71,8 @@ if [ "${CREATE_RELEASE}" = "true" ] || [ "${CREATE_RELEASE}" = true ]; then
     --arg b "$MESSAGE" \
     --argjson d "$DRAFT" \
     --argjson p "$PRE" \
-    '{tag_name: $tn, target_commitish: $tc, name: $n, body: $b, draft: $d, prerelease: $p}')
+    --argjson grn "$GENERATE_RELEASE_NOTES" \
+    '{tag_name: $tn, target_commitish: $tc, name: $n, body: $b, draft: $d, prerelease: $p, generate_release_notes: $grn}')
   echo "${JSON_STRING}"
   OUTPUT=$(curl -s --data "${JSON_STRING}" -H "Authorization: token ${GITHUB_TOKEN}" "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases")
   echo "${OUTPUT}" | jq
